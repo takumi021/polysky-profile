@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Film Solutions</title>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 1. Global Reset & Print Layout Controls */
+        *, ::before, ::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: #e5e7eb; }
+        html { line-height: 1.5; -webkit-text-size-adjust: 100%; font-family: 'Inter', sans-serif; }
+        
+        body { 
+            margin: 0; 
+            line-height: inherit; 
+            background-color: #525659; /* Standard dark PDF viewer background */
+            -webkit-font-smoothing: antialiased; 
+            color: #1f2937; 
+            padding-top: 68px; /* Offset for persistent toolbar */
+        }
+        
+        /* 2. Embedded PDF Style Action Toolbar */
+        .pdf-toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #323639;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 1000;
+            color: #ffffff;
+        }
+        .pdf-title-block {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .pdf-icon-badge {
+            background-color: #e53e3e;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+        .pdf-filename {
+            font-size: 14px;
+            font-weight: 500;
+            color: #e8eaed;
+            letter-spacing: 0.2px;
+        }
+        .print-btn {
+            background-color: #2b6cb0;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 0.5rem 1.25rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.15s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .print-btn:hover {
+            background-color: #1a4f8a;
+        }
+
+        /* 3. True Dimensions Page Layout Engine */
+        .page { 
+            width: 210mm; 
+            height: 296.8mm; 
+            margin: 2rem auto; 
+            position: relative; 
+            background: #ffffff; 
+            overflow: hidden; 
+            padding: 24mm 20mm; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
+            page-break-after: always;
+        }
+        .cover-page { padding: 0; }
+        
+        /* 4. Base Design Component Systems */
+        .grid { display: grid; }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+        .col-span-12 { grid-column: span 12 / span 12; }
+        .col-span-7 { grid-column: span 7 / span 7; }
+        .col-span-5 { grid-column: span 5 / span 5; }
+        
+        .flex { display: flex; }
+        .inline-flex { display: inline-flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .items-end { align-items: flex-end; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        
+        .absolute { position: absolute; }
+        .relative { position: relative; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .z-0 { z-index: 0; }
+        .z-10 { z-index: 10; }
+        .pointer-events-none { pointer-events: none; }
+        .overflow-hidden { overflow: hidden; }
+        
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-5 { margin-bottom: 1.25rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-12 { margin-bottom: 3rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .my-auto { margin-top: auto; margin-bottom: auto; }
+        .p-3 { padding: 0.75rem; }
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .px-20 { padding-left: 5rem; padding-right: 5rem; }
+        .pt-4 { padding-top: 1rem; }
+        .pt-8 { padding-top: 2rem; }
+        .pt-20 { padding-top: 5rem; }
+        .pb-3 { padding-bottom: 0.75rem; }
+        .pb-4 { padding-bottom: 1rem; }
+        .pb-20 { padding-bottom: 5rem; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .mr-3 { margin-right: 0.75rem; }
+        .gap-6 { gap: 1.5rem; }
+        .gap-8 { gap: 2rem; }
+        
+        .text-xs { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-sm { font-size: 1rem; line-height: 1.45rem; }
+        .text-base { font-size: 1.125rem; line-height: 1.5rem; }
+        .text-lg { font-size: 1.25rem; line-height: 1.75rem; }
+        .font-light { font-weight: 300; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        .font-extrabold { font-weight: 800; }
+        .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+        .uppercase { text-transform: uppercase; }
+        .tracking-wide { letter-spacing: 0.025em; }
+        .tracking-wider { letter-spacing: 0.05em; }
+        .tracking-widest { letter-spacing: 0.1em; }
+        .tracking-tight { letter-spacing: -0.025em; }
+        .leading-none { line-height: 1; }
+        .leading-normal { line-height: 1.5; }
+        .leading-relaxed { line-height: 1.5; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        
+        .border { border-width: 1px; }
+        .border-b { border-bottom-width: 1px; }
+        .border-t { border-top-width: 1px; }
+        .border-t-4 { border-top-width: 4px; }
+        .border-gray-100 { border-color: #f3f4f6; }
+        .border-gray-200 { border-color: #e5e7eb; }
+        .border-brand-border { border-color: #E5E7EB; }
+        .rounded-full { border-radius: 9999px; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .w-full { width: 100%; }
+        .w-max { width: max-content; }
+        .w-1 { width: 0.25rem; }
+        .w-2 { width: 0.5rem; }
+        .w-5 { width: 1.25rem; }
+        .w-10 { width: 2.5rem; }
+        .w-20 { width: 5rem; }
+        .h-1 { height: 0.25rem; }
+        .h-2 { height: 0.5rem; }
+        .h-5 { height: 1.25rem; }
+        .h-10 { height: 2.5rem; }
+        .bg-white { background-color: #ffffff; }
+        .bg-gray-50 { background-color: #f9fafb; }
+        .bg-brand-light { background-color: #FAFAFA; }
+        
+        .text-brand-dark { color: #1F2937; }
+        .text-brand-green { color: #198F4D; }
+        .text-brand-blue { color: #2B6CB0; }
+        .text-gray-300 { color: #d1d5db; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-gray-500 { color: #6b7280; }
+        .text-gray-600 { color: #4b5563; }
+        
+        .geo-gradient {
+            background: linear-gradient(135deg, rgba(43, 108, 176, 0.03) 0%, rgba(25, 143, 77, 0.03) 100%);
+        }
+        .accent-bar {
+            height: 8px;
+            background: linear-gradient(to right, #198F4D, #2B6CB0, #198F4D);
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #198F4D, #2B6CB0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* 5. Production Print Matrix Adjustments */
+        @media print {
+            @page {
+                size: A4;
+                margin: 0 !important;
+            }
+            body { 
+                background: none !important; 
+                padding-top: 0 !important;
+            }
+            .pdf-toolbar { 
+                display: none !important; 
+            }
+            .page { 
+                margin: 0 !important; 
+                border: none !important; 
+                box-shadow: none !important; 
+                width: 210mm !important;
+                height: 296.8mm !important;
+                page-break-after: always !important; 
+                page-break-inside: avoid !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SVG DEFINITIONS FOR BACKGROUND WATERMARKS -->
+    <svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <g id="money-plant">
+                <g transform="translate(100, 180)">
+                    <path d="M0,0 Q-20,-80 20,-160" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                    <g transform="translate(-5, -30) rotate(-60) scale(0.6)"><path d="M0,0 C-40,-10 -50,-50 -20,-70 C-10,-77 10,-77 20,-70 C50,-50 40,-10 0,0 Z" fill="currentColor"/></g>
+                    <g transform="translate(-10, -70) rotate(50) scale(0.7)"><path d="M0,0 C-40,-10 -50,-50 -20,-70 C-10,-77 10,-77 20,-70 C50,-50 40,-10 0,0 Z" fill="currentColor"/></g>
+                    <g transform="translate(5, -110) rotate(-40) scale(0.5)"><path d="M0,0 C-40,-10 -50,-50 -20,-70 C-10,-77 10,-77 20,-70 C50,-50 40,-10 0,0 Z" fill="currentColor"/></g>
+                    <g transform="translate(18, -150) rotate(30) scale(0.6)"><path d="M0,0 C-40,-10 -50,-50 -20,-70 C-10,-77 10,-77 20,-70 C50,-50 40,-10 0,0 Z" fill="currentColor"/></g>
+                    <g transform="translate(20, -160) rotate(5) scale(0.4)"><path d="M0,0 C-40,-10 -50,-50 -20,-70 C-10,-77 10,-77 20,-70 C50,-50 40,-10 0,0 Z" fill="currentColor"/></g>
+                </g>
+            </g>
+        </defs>
+    </svg>
+
+    <!-- PERSISTENT LIVE VIEW INTERACTIVE TOOLBAR -->
+    <div class="pdf-toolbar">
+        <div class="pdf-title-block">
+            <span class="pdf-icon-badge">PDF</span>
+            <span class="pdf-filename">Technical_Film_Solutions.pdf</span>
+        </div>
+        <button class="print-btn" onclick="window.print();">
+            <svg style="width:16px; height:16px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+            </svg>
+            Print / Download PDF
+        </button>
+    </div>
+
+    <!-- PAGE 3: TECHNICAL FILM SOLUTIONS -->
+    <div class="page bg-white">
+        <!-- Background Plant Watermark -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden z-0" style="opacity: 0.04;">
+            <svg class="absolute text-brand-green" style="top: -5%; left: -10%; width: 400px; height: 400px; transform: rotate(140deg);" viewBox="0 0 200 200">
+                <use href="#money-plant" />
+            </svg>
+        </div>
+
+        <div style="position: relative; z-index: 10;">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
+                <div class="flex items-center" style="gap: 0.5rem;">
+                    <div class="w-1 h-5 bg-brand-blue"></div>
+                    <h2 class="text-xs uppercase tracking-widest font-bold text-gray-400">Technical Film Solutions</h2>
+                </div>
+            </div>
+
+            <p class="text-sm text-gray-600 leading-relaxed mb-3">
+                Water-soluble films represent an innovative alternative to conventional packaging materials. Designed to dissolve completely in water without leaving harmful residues, these materials support safer chemical handling, improved dosing convenience, and environmentally responsible corporate operations.
+            </p>
+
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <div class="border border-gray-200 p-3 rounded-xl">
+                    <div class="w-2 h-2 bg-brand-green mb-1"></div>
+                    <h4 class="text-sm font-bold text-brand-dark mb-1">Precise Dissolvability</h4>
+                    <p class="text-xs text-gray-500 leading-normal">Engineered to disintegrate at precise target temperatures and specific durations without leaving residue.</p>
+                </div>
+                <div class="border border-gray-200 p-3 rounded-xl">
+                    <div class="w-2 h-2 bg-brand-blue mb-1"></div>
+                    <h4 class="text-sm font-bold text-brand-dark mb-1">Optimal Tensile Strength</h4>
+                    <p class="text-xs text-gray-500 leading-normal">High puncture resistance and physical integrity matching traditional linear low-density plastics.</p>
+                </div>
+                <div class="border border-gray-200 p-3 rounded-xl">
+                    <div class="w-2 h-2 bg-brand-green mb-1"></div>
+                    <h4 class="text-sm font-bold text-brand-dark mb-1">Chemical Resistance</h4>
+                    <p class="text-xs text-gray-500 leading-normal">Excellent barrier attributes against organic solvents, oils, greases, and concentrated raw chemicals.</p>
+                </div>
+                <div class="border border-gray-200 p-3 rounded-xl">
+                    <div class="w-2 h-2 bg-brand-blue mb-1"></div>
+                    <h4 class="text-sm font-bold text-brand-dark mb-1">Zero-Residue Performance</h4>
+                    <p class="text-xs text-gray-500 leading-normal">Breaks down completely into harmless organic compounds, preserving delicate ecosystems and aquatic life.</p>
+                </div>
+                <div class="border border-gray-200 p-3 rounded-xl">
+                    <div class="w-2 h-2 bg-brand-green mb-1"></div>
+                    <h4 class="text-sm font-bold text-brand-dark mb-1">Environmentally Responsible Packaging</h4>
+                    <p class="text-xs text-gray-500 leading-normal">Directly targets global microplastic elimination goals by replacing long-chain single-use materials.</p>
+                </div>
+                <div class="border border-gray-200 p-3 rounded-xl">
+                    <div class="w-2 h-2 bg-brand-blue mb-1"></div>
+                    <h4 class="text-sm font-bold text-brand-dark mb-1">High Performance Solutions</h4>
+                    <p class="text-xs text-gray-500 leading-normal">Seamlessly runs on high-speed form-fill-seal (FFS) automated machinery systems.</p>
+                </div>
+            </div>
+
+            <div class="p-4 text-white rounded-xl" style="background-color: #1f2937;">
+                <h3 class="text-sm font-bold mb-3" style="color: #60a5fa;">Why Water Soluble Films?</h3>
+                <ul class="text-xs text-gray-300" style="list-style-type: none; padding-left: 0; margin: 0; gap: 0.5rem; display: flex; flex-direction: column;">
+                    <li><span class="text-brand-green font-bold">✓</span> Secondary waste reduction</li>
+                    <li><span class="text-brand-green font-bold">✓</span> Landfill containment and diversion</li>
+                    <li><span class="text-brand-green font-bold">✓</span> Secure toxic chemical isolation</li>
+                    <li><span class="text-brand-green font-bold">✓</span> Precision dose normalization</li>
+                    <li><span class="text-brand-green font-bold">✓</span> Continuous form-fill-seal automation support</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center border-t border-gray-100 pt-4 text-xs text-gray-400" style="position: relative; z-index: 10;">
+            <span>Driven by Innovation. Committed to Sustainability.</span>
+        </div>
+    </div>
+
+    <!-- PAGE 4: INDUSTRIES WE SERVE -->
+    <div class="page bg-white">
+        <!-- Background Plant Watermark -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden z-0" style="opacity: 0.04;">
+            <svg class="absolute text-brand-green" style="bottom: 10%; left: -10%; width: 500px; height: 500px; transform: rotate(45deg);" viewBox="0 0 200 200">
+                <use href="#money-plant" />
+            </svg>
+        </div>
+
+        <div style="position: relative; z-index: 10;">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-8">
+                <div class="flex items-center" style="gap: 0.5rem;">
+                    <div class="w-1 h-5 bg-brand-green"></div>
+                    <h2 class="text-xs uppercase tracking-widest font-bold text-gray-400">Key Industries Served</h2>
+                </div>
+                <span class="text-xs font-mono text-gray-400">Market Applications</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div class="border-t-4 border-brand-green bg-brand-light p-6 flex flex-col justify-between rounded-xl">
+                    <div>
+                        <span class="text-xs font-mono text-brand-green font-bold uppercase tracking-wider block mb-2">Sector 01</span>
+                        <h3 class="text-base font-bold text-brand-dark mb-4 tracking-tight">AGROCHEMICALS</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            Pre-measured, unit-dose packaging for pesticides, fungicides, and fertilizers designed to help reduce direct chemical contact for farmers and operators.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-gray-200 flex justify-between items-center" style="border-top-style: dashed;">
+                        <span class="text-xs uppercase font-mono tracking-widest text-gray-400" style="font-size: 11px;">Industrial Dose Control</span>
+                        <span class="w-2 h-2 rounded-full bg-brand-green"></span>
+                    </div>
+                </div>
+
+                <div class="border-t-4 border-brand-blue bg-brand-light p-6 flex flex-col justify-between rounded-xl">
+                    <div>
+                        <span class="text-xs font-mono text-brand-blue font-bold uppercase tracking-wider block mb-2">Sector 02</span>
+                        <h3 class="text-base font-bold text-brand-dark mb-4 tracking-tight">DETERGENTS & CLEANERS</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            Single-dose liquid or powder laundry pods and automatic dishwasher tablet applications that improve convenience and dosing accuracy.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-gray-200 flex justify-between items-center" style="border-top-style: dashed;">
+                        <span class="text-xs uppercase font-mono tracking-widest text-gray-400" style="font-size: 11px;">Consumer Delivery Matrix</span>
+                        <span class="w-2 h-2 rounded-full bg-brand-blue"></span>
+                    </div>
+                </div>
+
+                <div class="border-t-4 border-brand-blue bg-brand-light p-6 flex flex-col justify-between rounded-xl">
+                    <div>
+                        <span class="text-xs font-mono text-brand-blue font-bold uppercase tracking-wider block mb-2">Sector 03</span>
+                        <h3 class="text-base font-bold text-brand-dark mb-4 tracking-tight">HEALTHCARE & MEDICAL</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                        Infection-control water-soluble warm-wash laundry containment bags for bio-hazardous textiles.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-gray-200 flex justify-between items-center" style="border-top-style: dashed;">
+                        <span class="text-xs uppercase font-mono tracking-widest text-gray-400" style="font-size: 11px;">Cross Infection Containment</span>
+                        <span class="w-2 h-2 rounded-full bg-brand-blue"></span>
+                    </div>
+                </div>
+
+                <div class="border-t-4 border-brand-green bg-brand-light p-6 flex flex-col justify-between rounded-xl">
+                    <div>
+                        <span class="text-xs font-mono text-brand-green font-bold uppercase tracking-wider block mb-2">Sector 04</span>
+                        <h3 class="text-base font-bold text-brand-dark mb-4 tracking-tight">TEXTILES & EMBROIDERY</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                        Clean-dissolving stabilizer backings for automated computer embroidery processing.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-gray-200 flex justify-between items-center" style="border-top-style: dashed;">
+                        <span class="text-xs uppercase font-mono tracking-widest text-gray-400" style="font-size: 11px;">Zero Post-Process Residue</span>
+                        <span class="w-2 h-2 rounded-full bg-brand-green"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6 mt-8">
+                <img src="assets/V2/img1.jpeg" alt="Industry Application 1" class="w-full h-40 object-cover rounded-xl shadow-sm border border-gray-200">
+                <img src="assets/V2/img2.avif" alt="Industry Application 2" class="w-full h-40 object-cover rounded-xl shadow-sm border border-gray-200">
+                <img src="assets/V2/img3.webp" alt="Industry Application 3" class="w-full h-40 object-cover rounded-xl shadow-sm border border-gray-200">
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center border-t border-gray-100 pt-4 text-xs text-gray-400" style="position: relative; z-index: 10;">
+            <span>Driven by Innovation. Committed to Sustainability.</span>
+        </div>
+    </div>
+
+</body>
+</html>
