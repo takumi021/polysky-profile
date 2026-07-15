@@ -13,6 +13,25 @@
     
     <!-- Website Stylesheet -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Responsive Overrides for Mobile Header -->
+    <style>
+        @media (max-width: 768px) {
+            .main-header .container {
+                flex-wrap: wrap;
+            }
+            .main-nav {
+                order: 3; /* Move nav below logo */
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding-top: 1rem;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+
 </head>
 <body>
 
