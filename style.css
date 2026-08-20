@@ -80,9 +80,10 @@ a {
 
 .logo-img {
     display: block;
-    width: 250px;
+    width: auto;
+    max-width: 250px;
     height: 60px;
-    object-fit: justify;
+    object-fit: contain;
 }
 
 .main-nav {
@@ -629,6 +630,10 @@ a {
     color: rgba(255, 255, 255, 0.8);
 }
 
+.industry-card:not(.featured-industry) {
+    padding-bottom: 8px;
+}
+
 .industry-card:not(.featured-industry) h3,
 .industry-card:not(.featured-industry) p {
     padding-inline: 24px;
@@ -748,25 +753,31 @@ a {
 
 @media (max-width: 920px) {
     .container {
-        width: min(var(--container), calc(100% - 28px));
+        width: min(var(--container), calc(100% - 32px));
     }
 
     .main-header {
-        padding: 12px 0;
+        padding: 10px 0;
     }
 
     .header-shell {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 14px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .logo-img {
+        height: 48px;
+        max-width: 180px;
     }
 
     .main-nav {
-        width: 100%;
-        justify-content: flex-start;
+        width: auto;
+        justify-content: flex-end;
         overflow-x: auto;
         flex-wrap: nowrap;
-        padding-bottom: 4px;
+        padding-bottom: 0;
         scrollbar-width: none;
     }
 
@@ -838,6 +849,22 @@ a {
 }
 
 @media (max-width: 780px) {
+    .header-shell {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .logo-img {
+        height: 40px;
+        max-width: 160px;
+    }
+
+    .main-nav {
+        width: 100%;
+        justify-content: flex-start;
+        padding-bottom: 4px;
+    }
+
     .hero-section,
     .content-section {
         padding: 64px 0;
@@ -925,7 +952,8 @@ a {
     }
 
     .logo-img {
-        height: 44px;
+        height: 36px;
+        max-width: 140px;
     }
 
     .hero-badge,
