@@ -568,9 +568,20 @@ a {
     height: 250px;
 }
 
-.industry-body,
-.industry-card:not(.featured-industry) {
+.industry-body {
     padding: 24px;
+}
+
+.industry-card {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.82);
+    display: flex;
+    flex-direction: column;
+}
+
+.featured-industry {
+    padding: 0;
 }
 
 .application-visual {
@@ -633,20 +644,12 @@ a {
 }
 
 .industry-card:not(.featured-industry) {
-    padding-bottom: 8px;
+    padding-bottom: 0;
 }
 
-.industry-card:not(.featured-industry) h3,
-.industry-card:not(.featured-industry) p {
-    padding-inline: 24px;
-}
-
+/* removed redundant individual paddings since industry-body handles it now */
 .industry-card:not(.featured-industry) h3 {
-    margin-top: 20px;
-}
-
-.industry-card:not(.featured-industry) p {
-    padding-bottom: 24px;
+    margin-top: 0;
 }
 
 .brochure-panel {
@@ -913,11 +916,10 @@ a {
         width: 100%;
     }
 
-    .contact-card,
+        .contact-card,
     .map-card,
     .panel-card,
     .capability-card,
-    .industry-card:not(.featured-industry),
     .industry-body {
         padding: 22px;
     }
@@ -979,12 +981,7 @@ a {
         line-height: 1.06;
     }
 
-    .industry-card:not(.featured-industry) h3,
-    .industry-card:not(.featured-industry) p {
-        padding-inline: 20px;
-    }
-
-    .industry-card:not(.featured-industry) p {
-        padding-bottom: 20px;
+        .industry-body {
+        padding: 20px;
     }
 }
