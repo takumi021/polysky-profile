@@ -857,18 +857,25 @@ a {
 @media (max-width: 780px) {
     .header-shell {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
+        gap: 12px;
     }
 
     .logo-img {
-        height: 40px;
-        max-width: 160px;
+        height: 48px;
+        max-width: 200px;
     }
 
     .main-nav {
         width: 100%;
-        justify-content: flex-start;
-        padding-bottom: 4px;
+        justify-content: center;
+        padding-bottom: 8px;
+        gap: 4px;
+    }
+
+    .nav-link {
+        padding: 6px 10px;
+        font-size: 0.8rem;
     }
 
     .hero-section,
@@ -912,8 +919,12 @@ a {
         align-items: stretch;
     }
 
-    .btn {
+        .btn {
         width: 100%;
+        max-width: 300px;
+        margin-inline: auto;
+        padding: 12px 20px;
+        font-size: 0.95rem;
     }
 
         .contact-card,
@@ -957,13 +968,21 @@ a {
     }
 
     .logo-img {
-        height: 36px;
-        max-width: 140px;
+        height: 44px;
+        max-width: 180px;
+    }
+
+    .nav-link {
+        font-size: 0.72rem;
+        padding: 5px 8px;
+    }
+
+    .main-nav {
+        gap: 2px;
     }
 
     .hero-badge,
-    .nyrasol-apps span,
-    .nav-link {
+    .nyrasol-apps span {
         font-size: 0.78rem;
     }
 
