@@ -168,7 +168,8 @@ a {
 
 .hero-title {
     margin: 0;
-    max-width: 10ch;
+    /* removed the very narrow 10ch cap which caused extreme wrapping on phones */
+    max-width: 60ch;
     font-size: clamp(3rem, 5vw, 5.5rem);
     line-height: 0.97;
     letter-spacing: -0.05em;
@@ -303,12 +304,13 @@ a {
     object-fit: cover;
 }
 
+/* make the main hero visual scale instead of using a fixed very large height */
 .hero-photo-main {
-    min-height: 620px;
+    min-height: clamp(240px, 50vh, 620px);
 }
 
 .hero-photo-stack .hero-photo-card:first-child {
-    min-height: 300px;
+    min-height: clamp(200px, 35vh, 300px);
 }
 
 .accent-card {
@@ -810,7 +812,8 @@ a {
     }
 
     .hero-photo-main {
-        min-height: 420px;
+        /* keep a reasonable height on medium phones */
+        min-height: clamp(220px, 45vh, 420px);
     }
 
     .hero-photo-stack {
